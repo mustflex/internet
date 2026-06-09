@@ -138,4 +138,60 @@ namespace MustafaBayram.Areas.Yonetim.Controllers
         }
     }
 }
+____________________________________________________________________________________KullaniciManager.cs_________________________________________________________________________
+using MustafaBayram.DatabaseAccessLayer;
+using MustafaBayram.EntityLayer.Models;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace MustafaBayram.BusinessLayer
+{
+    public class KullaniciManager
+    {
+        private readonly UnitOfWork unitOfWork;
+
+
+        public KullaniciManager()
+        {
+            this.unitOfWork = new UnitOfWork();
+        }
+
+        public List<Kullanici>ToList()
+        {
+            return unitOfWork.KullaniciRepository.GetAll().ToList();
+        }
+
+        public Kullanici Insert(Kullanici item)
+        {
+            unitOfWork.KullaniciRepository.Add(item);
+            unitOfWork.SaveChanges();
+            return item;
+        }
+
+        public int Delete(int id)
+        {
+            unitOfWork.KullaniciRepository.Delete(id);
+            return unitOfWork.SaveChanges();
+        }
+
+        public int Update(Kullanici item)
+        {
+            unitOfWork.KullaniciRepository.Update(item);
+            return unitOfWork.SaveChanges();
+
+        }
+
+        public bool login(string Eposta , string Parola)
+        {
+            return unitOfWork.KullaniciRepository.login(Eposta , Parola);
+        }
+
+    }
+}
+
+
+
 */
