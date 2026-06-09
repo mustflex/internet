@@ -1,0 +1,141 @@
+﻿/*
+__________________________________________________________________________________KimlikFiltre.cs________________________________________________________________________________
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Web;
+using System.Web.Mvc;
+using System.Web.Mvc.Filters;
+using System.Web.Routing;
+
+namespace MustafaBayram.Filters
+{
+    public class KimlikFiltre : FilterAttribute, IAuthenticationFilter
+    {
+        public void OnAuthentication(AuthenticationContext filterContext)
+        {
+            if (filterContext.HttpContext.Session["GirisYapanKullanici"] == null)
+            {
+                filterContext.Result = new HttpUnauthorizedResult();
+            }
+        }
+
+        public void OnAuthenticationChallenge(AuthenticationChallengeContext filterContext)
+        {
+            if (filterContext.Result is HttpUnauthorizedResult)
+            {
+                filterContext.Result = new RedirectToRouteResult(
+                    new RouteValueDictionary
+                    {
+                        { "controller", "Kullanici" },
+                        { "action", "Login" },
+                        { "area", "Yonetim" }
+                    });
+            }
+        }
+    }
+}
+
+________________________________________________________________________________Login.cshtml_____________________________________________________________________________________
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>Yönetim Paneli Girişi</title>
+    <link rel="stylesheet" href="~/Content/bootstrap.min.css">
+    <link rel="stylesheet" href="~/Content/font-awesome.min.css">
+</head>
+<body class="bg-light">
+    <div class="container mt-5">
+        <div class="row justify-content-center">
+            <div class="col-md-4 mt-5">
+                <div class="card shadow">
+                    <div class="card-header bg-dark text-white text-center py-3">
+                        <h5 class="mb-0"><i class="fa fa-lock me-2"></i>Yönetim Paneli Giriş</h5>
+                    </div>
+                    <div class="card-body p-4">
+                        @if (ViewBag.Hata != null)
+                        {
+                            <div class="alert alert-danger text-center p-2">
+                                <i class="fa fa-exclamation-triangle me-2"></i>@ViewBag.Hata
+                            </div>
+                        }
+
+                        @using (Html.BeginForm("Login", "Kullanici", new { area = "Yonetim" }, FormMethod.Post))
+                        {
+                            <div class="mb-3">
+                                <label class="form-label fw-bold"><i class="fa fa-envelope-o me-1"></i> E-posta</label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-light"><i class="fa fa-user"></i></span>
+                                    <input type="text" name="eposta" class="form-control" placeholder="E-posta adresinizi giriniz" required />
+                                </div>
+                            </div>
+
+                            <div class="mb-4">
+                                <label class="form-label fw-bold"><i class="fa fa-key me-1"></i> Parola</label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-light"><i class="fa fa-lock"></i></span>
+                                    <input type="password" name="parola" class="form-control" placeholder="Parolanızı giriniz" required />
+                                </div>
+                            </div>
+
+                            <button type="submit" class="btn btn-dark w-100 py-2 fw-bold">
+                                <i class="fa fa-sign-in me-2"></i>Giriş Yap
+                            </button>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
+
+_____________________________________________________________________________KullaniciController.cs______________________________________________________________________________
+
+
+using System.Linq;
+using System.Web.Mvc;
+using MustafaBayram.BusinessLayer;
+
+namespace MustafaBayram.Areas.Yonetim.Controllers
+{
+    public class KullaniciController : Controller
+    {
+        private readonly KullaniciManager _kullaniciManager = new KullaniciManager();
+
+        [HttpGet]
+        public ActionResult Login()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        public ActionResult Login(string eposta, string parola)
+        {
+            bool girisBasarili = _kullaniciManager.login(eposta, parola);
+
+            if (girisBasarili)
+            {
+                var kullanici = _kullaniciManager.ToList().FirstOrDefault(x => x.Eposta == eposta);
+                Session["GirisYapanKullanici"] = kullanici;
+
+                return RedirectToAction("AnaSayfa", "AnaSayfa", new { area = "Yonetim" });
+            }
+
+            ViewBag.Hata = "E-posta veya parola hatalı!";
+            return View();
+        }
+
+        public ActionResult Logout()
+        {
+            Session.Abandon();
+            return RedirectToAction("Login");
+        }
+    }
+}
+*/
